@@ -16,6 +16,8 @@ class Split:
         l_num_obs = self.left.observations.shape[0]
         r_num_obs = self.right.observations.shape[0]
         
+        self.delta_impurity = self.delta_impurity - 0
+        
     def printSplit(self):
         print(self.column)
         self.left.printTree()
@@ -47,7 +49,8 @@ def tree_grow(x: pd.DataFrame, y: pd.DataFrame, nmin: int, minleaf: int, nfeat: 
 def tree_pred(x: pd.DataFrame, tr: t.TreeNode):
     pass
 
-# def selectSplit(candidate_splits: list()) ->: Tuple(t.TreeNode, t.TreeNode, str):
+def selectSplit(candidate_splits: list()) -> Split:
+    pass
     
 
 def generateSplit(current_node: t.TreeNode, column: str, parent_impurity: int) -> Split: #Tuple[t.TreeNode, t.TreeNode, str]:
@@ -73,7 +76,6 @@ def generateSplit(current_node: t.TreeNode, column: str, parent_impurity: int) -
 def calculateImpurity(current_node: t.TreeNode) -> float:
     # print(f"The values are {current_node.labels.sum()} and {current_node.labels.shape[0]}")
     p_0 = current_node.labels.sum()/current_node.labels.shape[0]
-    assert p_0 <= 1, "p_0 could not be computed as a probability"
     g_index = p_0*(1-p_0)
     print(g_index)
     return g_index

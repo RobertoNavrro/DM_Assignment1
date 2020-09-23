@@ -8,10 +8,5 @@ class TreeNode:
         self.split = column
         
     def printTree(self):
-        # if self.left is not None:
-        #     self.printTree(self.left)
-        # if self.right is not None:
-        #     self.printTree(self.right)
-                        
         print(f"{self.observations}")
         print(f"{self.labels}")
