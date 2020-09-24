@@ -7,7 +7,7 @@ def load_credit_data():
     data = pd.read_csv(path,sep=",")
     class_label = data["class"].copy()
     data = data.drop(columns="class")
-    return data, class_label
+    return data.to_numpy(), class_label.to_numpy()
 
 if __name__ == "__main__":
     credit_data = load_credit_data()
