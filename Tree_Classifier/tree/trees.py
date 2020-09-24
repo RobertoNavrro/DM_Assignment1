@@ -1,7 +1,6 @@
-import pandas as pd
 import tree.tree_node as t
 import numpy as np
-from tree.splits import calculateNodeImpurity, selectSplit,generateSplit, applySplit
+from tree.splits import calculateNodeImpurity, selectSplit, applySplit, binarySplit, numericalSplit
 
 def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int) -> t.TreeNode:
     # nmin: Number of observations it must have to allow for a split.
@@ -22,7 +21,10 @@ def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int) -> 
       if current_impurity > 0 and current_node.observations.shape[0] >= nmin:
           
           for column in range(current_node.observations.shape[1]):
-              candidate = generateSplit(current_node, column, current_impurity, minleaf)
+              if all(v==0 or v==1 for v in current_node.observations[ :, column]):
+                  candidate = binarySplit(current_node, column, current_impurity, minleaf)
+              else:
+                  candidate = numericalSplit(current_node, column, current_impurity, minleaf)
               if candidate is not None:
                   split_list.append(candidate)
                   

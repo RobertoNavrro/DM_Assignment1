@@ -7,21 +7,13 @@ class TreeNode:
         self.observations = x
         self.labels = y
         self.column = column
-    
-    def set_column(self,column):
-        self.column= column
-    
-    def set_left(self, left_child):
-        self.left = left_child
-    
-    def set_right(self, right_child):
-        self.right = right_child
-    
+
     def printNode(self):
         print(f"{self.column}:")
         print(f"{self.observations}")
         print(f"{self.labels}")
 
+# Debugging function
 def printTree(self, node: TreeNode):
     if node.left is not None:
         self.printTree(node.left)
