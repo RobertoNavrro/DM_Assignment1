@@ -2,7 +2,7 @@ import tree.tree_node as t
 import numpy as np
 
 class Split:
-    def __init__(self, left: t.TreeNode, right: t.TreeNode, column: int, split_value: int, parent_impurity: float):
+    def __init__(self, left: t.TreeNode, right: t.TreeNode, column: int, split_value: float, parent_impurity: float):
         self.left = left
         self.right = right
         self.column = column
@@ -15,22 +15,11 @@ class Split:
         l_num_obs = self.left.observations.shape[0]
         r_num_obs = self.right.observations.shape[0]
         obs_count = l_num_obs + r_num_obs
+        # Sometimes this appears to be negative, this might be an issue
         return parent_impurity - (l_num_obs/obs_count)*(l_impurity) - (r_num_obs/obs_count)*(r_impurity)
-    
-    # Debugging function    
-    def printSplit(self):
-        print(f"Column:{self.column}, DeltaImpurity: {self.delta_impurity}")
-        print("================")
-        self.left.printNode()
-        print("----------------")
-        self.right.printNode()
-        print("================")
-        
-        
         
 # Functions that are not part of the split class itself,
 # but provide functionality &/or create a Split
-
       
 def applySplit(tree_node: t.TreeNode, split: Split) -> None:
     tree_node.left = split.left

@@ -9,7 +9,7 @@ def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int) -> 
     
     #the first node begins with all the data
     root = t.TreeNode(x, y, None,-1)
-    nodelist = [root]
+    nodelist = [root] 
     split_list = list()
     ID = 0
     while(nodelist):
@@ -40,11 +40,21 @@ def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int) -> 
 
 
 def tree_pred(x: np.array, tr: t.TreeNode):
-    
-    for entry in x:
-        pass
-    
-    pass
+    root = tr
+    predicted_labels = list()
+    for row in range(x.shape[0]):
+        while(tr):
+            if type(tr.column) is not type(None):
+                item = int(x.item((row,tr.column)))
+                if item <= tr.split_value:
+                    tr = tr.left
+                elif item > tr.split_value: 
+                    tr = tr.right
+            else:
+                predicted_labels.append(np.bincount(tr.labels).argmax())
+                tr = None
+        tr = root
+    return np.asarray(predicted_labels)
     
 def printTree(node: t.TreeNode):
     if node.left is not None:
