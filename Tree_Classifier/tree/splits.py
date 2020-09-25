@@ -34,7 +34,7 @@ class Split:
 def applySplit(split: Split, tree_node: t.TreeNode) -> None:
     tree_node.left = split.left
     tree_node.right = split.right
-    tree_node.column = split.column 
+    tree_node.column = split.column
 
 def selectSplit(candidate_splits: list()) -> Split:
     delta_impurity = float(0)
@@ -71,7 +71,7 @@ def binarySplit(current_node: t.TreeNode, column: int, parent_impurity: float, m
     if not minLeafConstraint(left_x, right_x, minleaf):
         return None
     else:
-        return Split(t.TreeNode(np.asarray(left_x),np.asarray(left_y),None), t.TreeNode(np.asarray(right_x),np.asarray(right_y),None), column, parent_impurity)
+        return Split(t.TreeNode(np.asarray(left_x),np.asarray(left_y),None,current_node.node_id), t.TreeNode(np.asarray(right_x),np.asarray(right_y),None,current_node.node_id), column, parent_impurity)
     
 def numericalSplit(current_node: t.TreeNode, column: int, parent_impurity: float, minleaf: int) -> Split:
     #initialize 4 lists, do not use ([],) * 4 pythonism! it messes with the list allocation
@@ -79,6 +79,24 @@ def numericalSplit(current_node: t.TreeNode, column: int, parent_impurity: float
     left_y = list()
     right_x = list()
     right_y = list()
+    
+    obs_copy = current_node.observations.copy()
+    label_copy = current_node.labels.copy().transpose()
+    
+    # Combine the Observations and copies to prevent messing up labels
+    full_stack = np.insert(obs_copy,obs_copy.shape[1],label_copy,axis=1)
+    
+    # Sort the observations+labels based on a column
+    full_stack = full_stack[full_stack[:,column].argsort()]
+    
+    
+    
+    
+    
+    print(full_stack)
+    print("\n\n")
+    
+    return None
     
 
 def calculateNodeImpurity(current_node: t.TreeNode) -> float:

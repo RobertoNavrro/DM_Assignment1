@@ -1,16 +1,18 @@
 import numpy as np
 
 class TreeNode:
-    def __init__(self, x: np.array, y: np.array, column: int):
+    def __init__(self, x: np.array, y: np.array, column: int, parent_id: int):
         self.left = None
         self.right = None
         self.observations = x
         self.labels = y
         self.column = column
+        self.node_id = None
+        self.child_of = parent_id
 
     def printNode(self):
-        print(f"{self.column}:")
-        print(f"{self.observations}")
+        print(f"Split : {self.column} - Parent_Id : {self.child_of}: - Node_Id : {self.node_id}")
+        print(f"{self.observations} \n")
         print(f"{self.labels}")
 
 # Debugging function

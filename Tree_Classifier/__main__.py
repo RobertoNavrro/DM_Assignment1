@@ -5,7 +5,7 @@ def main():
     obs, labels = load_credit_data()
     tree = tree_grow(obs,labels,2,1,obs.shape[1])
     print("Here is the tree!:")
-    printTree(tree,0)
+    printTree(tree)
     
     
 if __name__ == "__main__":

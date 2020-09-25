@@ -8,16 +8,16 @@ def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int) -> 
     # nfeat denotes the number of features considered for each split.
     
     #the first node begins with all the data
-    root = t.TreeNode(x,y,None)
+    root = t.TreeNode(x, y, None,-1)
     nodelist = [root]
     split_list = list()
-
+    ID = 0
     while(nodelist):
       # Obtain the first item from the nodelist
       current_node = nodelist[0]
       nodelist.remove(current_node)
       current_impurity = calculateNodeImpurity(current_node)
-      
+      current_node.node_id = ID
       if current_impurity > 0 and current_node.observations.shape[0] >= nmin:
           
           for column in range(current_node.observations.shape[1]):
@@ -25,6 +25,7 @@ def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int) -> 
                   candidate = binarySplit(current_node, column, current_impurity, minleaf)
               else:
                   candidate = numericalSplit(current_node, column, current_impurity, minleaf)
+                  candidate = None
               if candidate is not None:
                   split_list.append(candidate)
                   
@@ -33,6 +34,7 @@ def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int) -> 
               nodelist.append(current_node.left)
               nodelist.append(current_node.right)
               split_list.clear()
+              ID+=1
               
     return root
 
@@ -40,14 +42,12 @@ def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int) -> 
 def tree_pred(x: np.array, tr: t.TreeNode):
     pass
     
-def printTree(node: t.TreeNode, depth: int):
+def printTree(node: t.TreeNode):
     if node.left is not None:
-        printTree(node.left,depth+1)
-        print(f"LEFT - depth: {depth}")
+        printTree(node.left)
     print("\n")
     node.printNode()
     print("\n")     
     if node.right is not None:
-        print(f"RIGHT - depth: {depth}")
-        printTree(node.right,depth+1)
+        printTree(node.right)
     
