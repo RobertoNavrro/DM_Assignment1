@@ -2,10 +2,11 @@ import tree.tree_node as t
 import numpy as np
 
 class Split:
-    def __init__(self, left: t.TreeNode, right: t.TreeNode, column: int, parent_impurity: float):
+    def __init__(self, left: t.TreeNode, right: t.TreeNode, column: int, split_value: int, parent_impurity: float):
         self.left = left
         self.right = right
         self.column = column
+        self.value = split_value
         self.delta_impurity = self.calculateDeltaImpurity(parent_impurity)
         
     def calculateDeltaImpurity(self, parent_impurity: float):
@@ -31,10 +32,11 @@ class Split:
 # but provide functionality &/or create a Split
 
       
-def applySplit(split: Split, tree_node: t.TreeNode) -> None:
+def applySplit(tree_node: t.TreeNode, split: Split) -> None:
     tree_node.left = split.left
     tree_node.right = split.right
     tree_node.column = split.column
+    tree_node.split_value = split.value
 
 def selectSplit(candidate_splits: list()) -> Split:
     delta_impurity = float(0)
@@ -51,53 +53,32 @@ def minLeafConstraint(left_obs: list, right_obs: list, minleaf: int) -> bool:
     else:
         return True
 
-def binarySplit(current_node: t.TreeNode, column: int, parent_impurity: float, minleaf: int) -> Split:
-    #initialize 4 lists, do not use ([],) * 4 pythonism! it messes with the list allocation
-    left_x = list()
-    left_y = list()
-    right_x = list()
-    right_y = list()
-    for x_val, y_val, i in zip(current_node.observations[:, column], current_node.labels, range(current_node.observations.shape[0])):
-        # Fill in the observations that allow the split, we are storing the entire row!
-        if x_val == 0:
-            # To prevent messing with different tree values, we make copies (More memory but who cares)
-            left_x.append(current_node.observations[i])
-            left_y.append(y_val)
-        elif x_val == 1:
-            right_x.append(current_node.observations[i])
-            right_y.append(y_val)
-                
-        # If our current split has a leaf that does not meet the minleaf constraint we do not allow it.
-    if not minLeafConstraint(left_x, right_x, minleaf):
-        return None
-    else:
-        return Split(t.TreeNode(np.asarray(left_x),np.asarray(left_y),None,current_node.node_id), t.TreeNode(np.asarray(right_x),np.asarray(right_y),None,current_node.node_id), column, parent_impurity)
-    
-def numericalSplit(current_node: t.TreeNode, column: int, parent_impurity: float, minleaf: int) -> Split:
-    #initialize 4 lists, do not use ([],) * 4 pythonism! it messes with the list allocation
+
+def generateSplits(current_node: t.TreeNode, column: int, parent_impurity: float, minleaf: int, values: np.array) -> list:
     left_x = list()
     left_y = list()
     right_x = list()
     right_y = list()
     
-    obs_copy = current_node.observations.copy()
-    label_copy = current_node.labels.copy().transpose()
-    
-    # Combine the Observations and copies to prevent messing up labels
-    full_stack = np.insert(obs_copy,obs_copy.shape[1],label_copy,axis=1)
-    
-    # Sort the observations+labels based on a column
-    full_stack = full_stack[full_stack[:,column].argsort()]
-    
-    
-    
-    
-    
-    print(full_stack)
-    print("\n\n")
-    
-    return None
-    
+    split_list = list() 
+    for split_value in values:
+        for x_val, y_val, i in zip(current_node.observations[:, column], current_node.labels, range(current_node.observations.shape[0])):
+            # Fill in the observations that allow the split, we are storing the entire row!
+            if x_val < split_value: # if less than 1 in binary, if less than x some value in numerical
+                left_x.append(current_node.observations[i])
+                left_y.append(y_val)
+            elif x_val >= split_value:
+                right_x.append(current_node.observations[i])
+                right_y.append(y_val)
+        if minLeafConstraint(left_x, right_x, minleaf):
+            split_list.append(Split(t.TreeNode(np.asarray(left_x),np.asarray(left_y),None,current_node.node_id), t.TreeNode(np.asarray(right_x),np.asarray(right_y),None,current_node.node_id), column, split_value, parent_impurity))
+        left_x.clear()
+        left_y.clear()
+        right_x.clear()
+        right_y.clear()
+        
+    return split_list
+
 
 def calculateNodeImpurity(current_node: t.TreeNode) -> float:
     _sum = float(0)
