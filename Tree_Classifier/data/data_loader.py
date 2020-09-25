@@ -9,6 +9,3 @@ def load_credit_data():
     # class_label.resize(class_label.shape[0],1)
     data = data.drop(columns="class").to_numpy()
     return data, class_label
-
-if __name__ == "__main__":
-    credit_data = load_credit_data()

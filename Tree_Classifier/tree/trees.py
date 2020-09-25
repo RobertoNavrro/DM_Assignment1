@@ -21,7 +21,7 @@ def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int) -> 
       if current_impurity > 0 and current_node.observations.shape[0] >= nmin:
           for column in range(current_node.observations.shape[1]):
               if all(v==0 or v==1 for v in current_node.observations[ :, column]):
-                  splits = generateSplits(current_node, column, current_impurity, minleaf, np.asarray([1]))
+                  splits = generateSplits(current_node, column, current_impurity, minleaf, np.asarray([0]))
               else:
                   sorted_values = np.sort(np.unique(current_node.observations[:,column]))
                   value_splitpoints = (sorted_values[0:sorted_values.shape[0]-1] + sorted_values[1:sorted_values.shape[0]])/2
@@ -40,6 +40,10 @@ def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int) -> 
 
 
 def tree_pred(x: np.array, tr: t.TreeNode):
+    
+    for entry in x:
+        pass
+    
     pass
     
 def printTree(node: t.TreeNode):

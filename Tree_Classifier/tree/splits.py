@@ -64,10 +64,10 @@ def generateSplits(current_node: t.TreeNode, column: int, parent_impurity: float
     for split_value in values:
         for x_val, y_val, i in zip(current_node.observations[:, column], current_node.labels, range(current_node.observations.shape[0])):
             # Fill in the observations that allow the split, we are storing the entire row!
-            if x_val < split_value: # if less than 1 in binary, if less than x some value in numerical
+            if x_val <= split_value: # if less than 1 in binary, if less than x some value in numerical
                 left_x.append(current_node.observations[i])
                 left_y.append(y_val)
-            elif x_val >= split_value:
+            elif x_val > split_value:
                 right_x.append(current_node.observations[i])
                 right_y.append(y_val)
         if minLeafConstraint(left_x, right_x, minleaf):
