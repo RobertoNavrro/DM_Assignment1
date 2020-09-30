@@ -11,7 +11,7 @@ class TreeNode:
         self.impurity = self.calculateNodeImpurity()
 
     def printNode(self):
-        print(f"Split index:value = {self.column}:{self.split_value} - Parent_Id = {self.child_of} - Node_Id = {self.node_id}")
+        print(f"Split index:value = {self.column}:{self.split_value}")
         print(f"{self.observations} \n")
         print(f"{self.labels}")
     
@@ -22,5 +22,5 @@ class TreeNode:
             if v == 0:
                 _sum += 1
         p_0 = _sum/self.labels.shape[0]
-        gini_index = p_0*(1-p_0)
+        gini_index = p_0 * (1-p_0)
         return gini_index

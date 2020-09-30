@@ -84,7 +84,7 @@ def applySplit(tree_node: t.TreeNode, split: Split) -> None:
 
 
 def selectSplit(candidate_splits: list()) -> Split:
-    delta_impurity = float(0)
+    delta_impurity = float(-1)
     best_split = None
     for split in candidate_splits:
         if split.delta_impurity > delta_impurity:
@@ -96,7 +96,11 @@ def selectSplit(candidate_splits: list()) -> Split:
 
 
 def generateSplits(current_node: t.TreeNode, column: int, minleaf: int, values: np.array) -> list:
-    left_x, left_y, right_x, right_y, split_list= [],[],[],[],[]
+    left_x = [] 
+    left_y = []
+    right_x = []
+    right_y = []
+    split_list = []
     for split_value in values:
         for y_val, i in zip(current_node.labels, range(current_node.observations.shape[0])):
             # Fill in the observations that allow the split, we are storing the entire row!
