@@ -1,5 +1,5 @@
 from data.data_loader import load_credit_data, createMatrix
-from tree.trees import tree_grow, printTree, tree_pred
+from tree.trees import tree_grow, tree_pred
 
 def main():
     obs, labels = load_credit_data()

@@ -17,9 +17,9 @@ def createMatrix(predicted_labels, true_labels):
         if p_value == 0 and t_value == 0:
             matrix[0][0]+=1
         if p_value == 0 and t_value == 1:
-            matrix[0][1]+=1
-        if p_value == 1 and t_value == 0:
             matrix[1][0]+=1
+        if p_value == 1 and t_value == 0:
+            matrix[0][1]+=1
         if p_value == 1 and t_value == 1:
             matrix[1][1]+=1
     return matrix

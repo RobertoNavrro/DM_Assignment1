@@ -25,7 +25,7 @@ def tree_pred(x: np.array, tr: t.TreeNode) -> np.array:
     for row in range(x.shape[0]):
         while(tr):
             if type(tr.column) is not type(None):
-                item = int(x.item((row,tr.column)))
+                item = float(x.item((row,tr.column)))
                 if item <= tr.split_value:
                     tr = tr.left
                 elif item > tr.split_value: 
@@ -90,17 +90,11 @@ def selectSplit(candidate_splits: list()) -> Split:
         if split.delta_impurity > delta_impurity:
             best_split = split
             delta_impurity = split.delta_impurity
-    
-    print(f"Best calculated split: {best_split.column}  -  {best_split.value}  -   {delta_impurity}")
     return best_split
 
 
 def generateSplits(current_node: t.TreeNode, column: int, minleaf: int, values: np.array) -> list:
-    left_x = [] 
-    left_y = []
-    right_x = []
-    right_y = []
-    split_list = []
+    left_x, left_y, right_x, right_y, split_list = [], [], [], [], []
     for split_value in values:
         for y_val, i in zip(current_node.labels, range(current_node.observations.shape[0])):
             # Fill in the observations that allow the split, we are storing the entire row!
