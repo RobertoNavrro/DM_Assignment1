@@ -1,10 +1,28 @@
-import tree.tree_node as t
 import numpy as np
 from typing import List
 
+class TreeNode:
+    def __init__(self, x: np.array, y: np.array, column: int):
+        self.left = None
+        self.right = None
+        self.observations = x
+        self.labels = y
+        self.column = column
+        self.split_value = None
+        self.impurity = self.calculateNodeImpurity()
 
-def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int)-> t.TreeNode:
-    root = t.TreeNode(x,y,None)
+    def calculateNodeImpurity(self) -> float:
+        _sum = float(0)
+        # We can easily see how many 1s exist by adding them together
+        for v in self.labels:
+            if v == 0:
+                _sum += 1
+        p_0 = _sum/self.labels.shape[0]
+        gini_index = p_0 * (1-p_0)
+        return gini_index
+
+def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int)-> TreeNode:
+    root = TreeNode(x,y,None)
     nodelist = [root]
     while(nodelist):
         current_node = nodelist.pop(0)
@@ -19,7 +37,7 @@ def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int)-> t
     return root
 
 
-def tree_pred(x: np.array, tr: t.TreeNode) -> np.array:
+def tree_pred(x: np.array, tr: TreeNode) -> np.array:
     root = tr
     predicted_labels = list()
     for row in range(x.shape[0]):
@@ -36,9 +54,8 @@ def tree_pred(x: np.array, tr: t.TreeNode) -> np.array:
         tr = root
     return np.asarray(predicted_labels)
 
-
 class Split:
-    def __init__(self, left: t.TreeNode, right: t.TreeNode, column: int, split_value: float, parent_impurity: float):
+    def __init__(self, left: TreeNode, right: TreeNode, column: int, split_value: float, parent_impurity: float):
         self.left = left
         self.right = right
         self.column = column
@@ -55,13 +72,13 @@ class Split:
         return parent_impurity - (l_num_obs/obs_count)*(l_impurity) - (r_num_obs/obs_count)*(r_impurity)
 
 
-def binarySplit(current_node: t.TreeNode,split_attribute: int) -> bool:
+def binarySplit(current_node: TreeNode,split_attribute: int) -> bool:
     if all ((v==0 or v==1) for v in current_node.observations[:,split_attribute]):
         return True
     return False
 
 
-def produceSplits(current_node: t.TreeNode, minleaf: int) -> List[Split]:
+def produceSplits(current_node: TreeNode, minleaf: int) -> List[Split]:
     split_list = []
     for split_attribute in range(current_node.observations.shape[1]):
         if binarySplit(current_node,split_attribute):
@@ -76,7 +93,7 @@ def produceSplits(current_node: t.TreeNode, minleaf: int) -> List[Split]:
     return split_list
 
 
-def applySplit(tree_node: t.TreeNode, split: Split) -> None:
+def applySplit(tree_node: TreeNode, split: Split) -> None:
     tree_node.left = split.left
     tree_node.right = split.right
     tree_node.column = split.column
@@ -93,7 +110,7 @@ def selectSplit(candidate_splits: list()) -> Split:
     return best_split
 
 
-def generateSplits(current_node: t.TreeNode, column: int, minleaf: int, values: np.array) -> list:
+def generateSplits(current_node: TreeNode, column: int, minleaf: int, values: np.array) -> list:
     left_x, left_y, right_x, right_y, split_list = [], [], [], [], []
     for split_value in values:
         for y_val, i in zip(current_node.labels, range(current_node.observations.shape[0])):
@@ -106,7 +123,7 @@ def generateSplits(current_node: t.TreeNode, column: int, minleaf: int, values: 
                 right_x.append(current_node.observations[i])
                 right_y.append(y_val)
         if minLeafConstraint(left_y, right_y, minleaf):
-            split_list.append(Split(t.TreeNode(np.asarray(left_x),np.asarray(left_y),None), t.TreeNode(np.asarray(right_x),np.asarray(right_y),None), column, split_value, current_node.impurity))
+            split_list.append(Split(TreeNode(np.asarray(left_x),np.asarray(left_y),None), TreeNode(np.asarray(right_x),np.asarray(right_y),None), column, split_value, current_node.impurity))
         left_x.clear()
         left_y.clear()
         right_x.clear()
@@ -119,14 +136,3 @@ def minLeafConstraint(left_obs: list, right_obs: list, minleaf: int) -> bool:
         return False
     else:
         return True
-    
-
-def printTree(node: t.TreeNode):
-    if node.left is not None:
-        printTree(node.left)
-    print("\n")
-    node.printNode()
-    print("\n")     
-    if node.right is not None:
-        printTree(node.right)
-    
