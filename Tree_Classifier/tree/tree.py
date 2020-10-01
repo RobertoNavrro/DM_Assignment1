@@ -1,8 +1,20 @@
+from __future__ import annotations
 import numpy as np
 from typing import List
 
 class TreeNode:
+    """
+    Class that allows us to represent a collection of lists as a tree node
+    and inherently as a tree. A tree is composed of connected tree nodes.
+    """
     def __init__(self, x: np.array, y: np.array, column: int):
+        """
+        Initializer function that allows the instantiation of the object tree.
+        :param x: a 2D numpy array that contains the instances of the data.
+        :param y: a 1D numpy array that contains the true labels of the data.
+        :param column: an integer that indicates which column is used to split the tree node.
+        :return: None
+        """
         self.left = None
         self.right = None
         self.observations = x
@@ -12,8 +24,10 @@ class TreeNode:
         self.impurity = self.calculateNodeImpurity()
 
     def calculateNodeImpurity(self) -> float:
+        """
+        Function used to calculate the gini-index impurity of the node.
+        """
         _sum = float(0)
-        # We can easily see how many 1s exist by adding them together
         for v in self.labels:
             if v == 0:
                 _sum += 1
@@ -22,6 +36,15 @@ class TreeNode:
         return gini_index
 
 def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int)-> TreeNode:
+    """
+    Function that creates a binary classification tree.
+    :param x: a 2D numpy array that contains the instances of the data.
+    :param y: a 1D numpy array that contains the true labels of the data.
+    :param nmin: an integer that indicates the minimum number of observations required for a split to occur.
+    :param minleaf: an integer that indicates the minimum number of observations required for a tree leaf.
+    :param nfeat: an integer indicating the number of features that can be used to find a split.
+    :return: the root of a Tree
+    """
     root = TreeNode(x,y,None)
     nodelist = [root]
     while(nodelist):
@@ -38,8 +61,14 @@ def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int)-> T
 
 
 def tree_pred(x: np.array, tr: TreeNode) -> np.array:
+    """
+    Function responsible for obtaining the predictions of a tree, given a set of observations.
+    :param x: a 2D numpy array that contains the instances of the data to be predicted.
+    :param tr: a classification tree, trained on related data.
+    :return: a 1D numpy array that contains the predicted classifications for the observations provided.
+    """
     root = tr
-    predicted_labels = list()
+    predicted_labels = []
     for row in range(x.shape[0]):
         while(tr):
             if type(tr.column) is not type(None):
@@ -54,7 +83,30 @@ def tree_pred(x: np.array, tr: TreeNode) -> np.array:
         tr = root
     return np.asarray(predicted_labels)
 
+
+def tree_grow_b(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int, m: int)-> List[TreeNode] :
+    root = TreeNode(x,y,None)
+    nodelist = [root]
+    while(nodelist):
+        current_node = nodelist.pop(0)
+        if current_node.impurity > 0:
+            if nmin <= current_node.observations.shape[0]:
+                splits = produceSplits(current_node, minleaf)
+                best_split = selectSplit(splits)
+                if best_split:
+                    applySplit(current_node, best_split)
+                    nodelist.append(current_node.left)
+                    nodelist.append(current_node.right)
+    return root
+
+
 def tree_pred_b(x: np.array, tree_list: List[TreeNode]) -> np.array:
+    """
+    Function responsible for obtaining the prediction for an observation given a list of trees, for any number of observations.
+    :param x: a 2D numpy array that contains the instances of the data to be predicted.
+    :param tree_list: a list of classification trees, trained on related data.
+    :return: a 1D numpy array that contains the predicted classifications, obtained from a majority decision given the output of every given tree, for the observations provided.
+    """
     final_predicted_labels = []
     iter_predicted_labels = []
     for row in range(x.shape[0]):
@@ -74,7 +126,19 @@ def tree_pred_b(x: np.array, tree_list: List[TreeNode]) -> np.array:
     return np.asarray(final_predicted_labels)
 
 class Split:
+    """
+    Class that allows us to represent a split for a tree node.
+    """
     def __init__(self, left: TreeNode, right: TreeNode, column: int, split_value: float, parent_impurity: float):
+        """
+        Initializer function that allows the instantiation of a split.
+        :param left: a tree node that is the left child of a tree node.
+        :param right: a tree node that is the right child of a tree node.
+        :param column: an integer that indicates which column is used to split the tree node.
+        :param split_value: the value used to identify whether an observation goes to the left or right child.
+        :param parent_impurity: the gini-index of the parent node of the left and right tree nodes.
+        :return: None
+        """
         self.left = left
         self.right = right
         self.column = column
@@ -83,6 +147,11 @@ class Split:
    
         
     def calculateDeltaImpurity(self, parent_impurity: float) -> float:
+        """
+        Function that allows us to calculate the delta impurity of a split.
+        :param parent_impurity: the gini-index of the parent node that is being split.
+        :return: a float that represents the delta impurity of the split.
+        """
         l_impurity = self.left.impurity
         r_impurity = self.right.impurity
         l_num_obs = self.left.observations.shape[0]
@@ -91,13 +160,25 @@ class Split:
         return parent_impurity - (l_num_obs/obs_count)*(l_impurity) - (r_num_obs/obs_count)*(r_impurity)
 
 
-def binarySplit(current_node: TreeNode,split_attribute: int) -> bool:
+def binarySplit(current_node: TreeNode, split_attribute: int) -> bool:
+    """
+    Function checks whether the split is occuring on a binary attribute.
+    :param current_node: the tree node that is to be split. 
+    :param split_attribute: an integer that indicates which column is used to split the tree node.
+    :return: a boolean that indicates whether the split is binary.
+    """
     if all ((v==0 or v==1) for v in current_node.observations[:,split_attribute]):
         return True
     return False
 
 
 def produceSplits(current_node: TreeNode, minleaf: int) -> List[Split]:
+    """
+    Function that indentifies all possible splits for every attribute of a tree node.
+    :param current_node: the tree node for which the splits are being calculated.
+    :param minleaf: an integer that indicates the minimum number of observations required for a tree leaf.
+    :return: a list of every possible split for a tree node.
+    """
     split_list = []
     for split_attribute in range(current_node.observations.shape[1]):
         if binarySplit(current_node,split_attribute):
@@ -112,14 +193,26 @@ def produceSplits(current_node: TreeNode, minleaf: int) -> List[Split]:
     return split_list
 
 
-def applySplit(tree_node: TreeNode, split: Split) -> None:
-    tree_node.left = split.left
-    tree_node.right = split.right
-    tree_node.column = split.column
-    tree_node.split_value = split.value
+def applySplit(current_node: TreeNode, split: Split) -> None:
+    """
+    Function that applies a split to a tree node.
+    :param current_node: the tree node for which the split is occurring.
+    :param split: the split that is to be applied.
+    :return: None
+    """
+    current_node.left = split.left
+    current_node.right = split.right
+    current_node.column = split.column
+    current_node.split_value = split.value
 
 
-def selectSplit(candidate_splits: list()) -> Split:
+def selectSplit(candidate_splits: List[Split]) -> Split:
+    """
+    Function that applies a split to a tree node.
+    :param candidate_splits: a list of potential splits for a tree node.
+    :param split: the split that is to be applied.
+    :return: the best split possible.
+    """
     delta_impurity = float(-1)
     best_split = None
     for split in candidate_splits:
@@ -129,7 +222,15 @@ def selectSplit(candidate_splits: list()) -> Split:
     return best_split
 
 
-def generateSplits(current_node: TreeNode, column: int, minleaf: int, values: np.array) -> list:
+def generateSplits(current_node: TreeNode, column: int, minleaf: int, values: np.array) -> List:
+    """
+    Function responsible for generating a list of possible splits given a tree node.
+    :param current_node: the tree node for which the splits are being generated for.
+    :param column: an integer that indicates the attribute that the split will occur on.
+    :param minleaf: an integer that indicates the minimum number of observations required for a tree leaf.
+    :param values: a 1D numpy array that indicates the number of 
+    :return: a list that contains all the possible splits given an attribute in the observations of a tree node.
+    """
     left_x, left_y, right_x, right_y, split_list = [], [], [], [], []
     for split_value in values:
         for y_val, i in zip(current_node.labels, range(current_node.observations.shape[0])):
@@ -150,7 +251,13 @@ def generateSplits(current_node: TreeNode, column: int, minleaf: int, values: np
     return split_list
 
 
-def minLeafConstraint(left_obs: list, right_obs: list, minleaf: int) -> bool:
+def minLeafConstraint(left_obs: List, right_obs: List, minleaf: int) -> bool:
+    """
+    Function responsible for checking the minLeafConstraint.
+    :param left_obs: a list that contains the observations of a left child node.
+    :param right_obs: a list that contains the observations of a right child node
+    :return: a boolean indicating whether the constrain is met or not.
+    """
     if len(left_obs) < minleaf or len(right_obs) < minleaf:
         return False
     else:

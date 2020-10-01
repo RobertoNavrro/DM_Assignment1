@@ -19,7 +19,7 @@ def main():
     # tree_list.append(tree4)
     
     
-    predicted_labels = tree_pred_b(obs,tree_list)
+    predicted_labels = tree_pred(obs,tree)
     # print(createMatrix(predicted_labels,labels))
     
     
