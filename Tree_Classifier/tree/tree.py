@@ -54,6 +54,25 @@ def tree_pred(x: np.array, tr: TreeNode) -> np.array:
         tr = root
     return np.asarray(predicted_labels)
 
+def tree_pred_b(x: np.array, tree_list: List[TreeNode]) -> np.array:
+    final_predicted_labels = []
+    iter_predicted_labels = []
+    for row in range(x.shape[0]):
+        for tr in tree_list:
+            while(tr):
+                if type(tr.column) is not type(None):
+                    item = float(x.item((row,tr.column)))
+                    if item <= tr.split_value:
+                        tr = tr.left
+                    elif item > tr.split_value: 
+                        tr = tr.right
+                else:
+                    iter_predicted_labels.append(np.bincount(tr.labels).argmax())
+                    tr = None
+        final_predicted_labels.append(np.bincount(iter_predicted_labels).argmax())
+        iter_predicted_labels.clear()
+    return np.asarray(final_predicted_labels)
+
 class Split:
     def __init__(self, left: TreeNode, right: TreeNode, column: int, split_value: float, parent_impurity: float):
         self.left = left

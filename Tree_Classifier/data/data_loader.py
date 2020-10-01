@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 def load_credit_data():
-    path = str(Path(__file__).parent.parent.parent.joinpath('Tree_Classifier\data', 'pima.txt'))
+    path = str(Path(__file__).parent.parent.parent.joinpath('Tree_Classifier\data', 'credit.txt'))
     data = pd.read_csv(path,sep=",",header=None)
     class_label = data.iloc[:,data.shape[1]-1].copy().to_numpy()
     data = data.to_numpy()
