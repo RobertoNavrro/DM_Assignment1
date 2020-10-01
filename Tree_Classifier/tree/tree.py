@@ -234,9 +234,8 @@ def generateSplits(current_node: TreeNode, column: int, minleaf: int, values: np
     left_x, left_y, right_x, right_y, split_list = [], [], [], [], []
     for split_value in values:
         for y_val, i in zip(current_node.labels, range(current_node.observations.shape[0])):
-            # Fill in the observations that allow the split, we are storing the entire row!
             obs_value = current_node.observations[i, column]
-            if obs_value <= split_value: # if less than 1 in binary, if less than x some value in numerical
+            if obs_value <= split_value:
                 left_x.append(current_node.observations[i])
                 left_y.append(y_val)
             elif obs_value > split_value:
