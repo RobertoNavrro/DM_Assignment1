@@ -1,6 +1,7 @@
 from __future__ import annotations
 import numpy as np
 from typing import List
+import random
 
 class TreeNode:
     """
@@ -51,7 +52,7 @@ def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int)-> T
         current_node = nodelist.pop(0)
         if current_node.impurity > 0:
             if nmin <= current_node.observations.shape[0]:
-                splits = produceSplits(current_node, minleaf)
+                splits = produceSplits(current_node, minleaf, nfeat)
                 best_split = selectSplit(splits)
                 if best_split:
                     applySplit(current_node, best_split)
@@ -85,20 +86,32 @@ def tree_pred(x: np.array, tr: TreeNode) -> np.array:
 
 
 def tree_grow_b(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int, m: int)-> List[TreeNode] :
-    root = TreeNode(x,y,None)
-    nodelist = [root]
-    while(nodelist):
-        current_node = nodelist.pop(0)
-        if current_node.impurity > 0:
-            if nmin <= current_node.observations.shape[0]:
-                splits = produceSplits(current_node, minleaf)
-                best_split = selectSplit(splits)
-                if best_split:
-                    applySplit(current_node, best_split)
-                    nodelist.append(current_node.left)
-                    nodelist.append(current_node.right)
-    return root
-
+    """
+    Function responsible for growing m trees, where every nodes is built based on nfeat random attributs
+    :param x: a 2D numpy array that contains the instances of the data to be predicted.
+    :param y: a 1D numpy array that contains the true labels of the data.
+    :param nmin: an integer that indicates the minimum number of observations required for a split to occur.
+    :param minleaf: an integer that indicates the minimum number of observations required for a tree leaf.
+    :param nfeat: an integer indicating the number of features that can be used to find a split.
+    :param m: an integer indicating the number of bootstrap samples to be drawn
+    :return: a 1D array that contains the roots of all grown trees
+    """
+    tree_list = []
+    for i in range (m):
+        root = TreeNode(x,y,None)
+        nodelist = [root]
+        while(nodelist):
+            current_node = nodelist.pop(0)
+            if current_node.impurity > 0:
+                if nmin <= current_node.observations.shape[0]:
+                    splits = produceSplits(current_node, minleaf, nfeat)
+                    best_split = selectSplit(splits)
+                    if best_split:
+                        applySplit(current_node, best_split)
+                        nodelist.append(current_node.left)
+                        nodelist.append(current_node.right)
+        tree_list.append(root)
+    return tree_list
 
 def tree_pred_b(x: np.array, tree_list: List[TreeNode]) -> np.array:
     """
@@ -172,15 +185,17 @@ def binarySplit(current_node: TreeNode, split_attribute: int) -> bool:
     return False
 
 
-def produceSplits(current_node: TreeNode, minleaf: int) -> List[Split]:
+def produceSplits(current_node: TreeNode, minleaf: int, nfeat: int) -> List[Split]:
     """
-    Function that indentifies all possible splits for every attribute of a tree node.
+    Function that indentifies all possible splits randomly choosen nfeat attributes of a tree node.
     :param current_node: the tree node for which the splits are being calculated.
     :param minleaf: an integer that indicates the minimum number of observations required for a tree leaf.
+    :param nfeat: an integer indicating the number of features that can be used to find a split.
     :return: a list of every possible split for a tree node.
     """
+    random_columns = random.sample(range(0, (current_node.observations.shape[1])), nfeat)
     split_list = []
-    for split_attribute in range(current_node.observations.shape[1]):
+    for split_attribute in random_columns:
         if binarySplit(current_node,split_attribute):
             value_splitpoints = np.asarray([0])
         else:
