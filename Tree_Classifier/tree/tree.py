@@ -3,6 +3,12 @@ import numpy as np
 from typing import List
 import random
 
+
+
+#Authors : Roberto Navarro - 4826260, Maria Galanty - 8118875, Giacomo Fiorentini - 4861310.
+
+
+
 class TreeNode:
     """
     Class that allows us to represent a collection of lists as a tree node
