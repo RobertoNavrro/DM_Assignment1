@@ -23,6 +23,26 @@ def createMatrix(predicted_labels, true_labels):
         if p_value == 1 and t_value == 1:
             matrix[1][1]+=1
     return matrix
+
+def load_eclipse_data():
+    path = str(Path(__file__).parent.parent.parent.joinpath('Tree_Classifier\data', 'eclipse-metrics-packages-2.0.csv'))
+    data = pd.read_csv(path, sep = ";")
+    data.drop(data.columns[44:], axis=1, inplace= True)
+    data.drop(['plugin', 'packagename'], axis=1, inplace= True)
+    class_label = data.iloc[:,1].copy().to_numpy()
+    data.drop(data.columns[1], axis=1, inplace= True)
+    data = data.to_numpy()
+    return data, class_label
+
+def load_eclipse_testdata():
+    path = str(Path(__file__).parent.parent.parent.joinpath('Tree_Classifier\data', 'eclipse-metrics-packages-3.0.csv'))
+    data = pd.read_csv(path, sep = ";")
+    data.drop(data.columns[44:], axis=1, inplace= True)
+    data.drop(['plugin', 'packagename'], axis=1, inplace= True)
+    class_label = data.iloc[:,1].copy().to_numpy()
+    data.drop(data.columns[1], axis=1, inplace= True)
+    data = data.to_numpy()
+    return data, class_label
     
 if __name__ == "__main__":
     obs_test, label_test = load_credit_data()
