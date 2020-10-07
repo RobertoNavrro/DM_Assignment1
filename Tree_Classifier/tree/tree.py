@@ -66,6 +66,34 @@ def tree_grow(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int)-> T
                     nodelist.append(current_node.right)
     return root
 
+def tree_grow_limited(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int, limit: int)-> TreeNode:
+    """
+    Function that creates a binary classification tree.
+    :param x: a 2D numpy array that contains the instances of the data.
+    :param y: a 1D numpy array that contains the true labels of the data.
+    :param nmin: an integer that indicates the minimum number of observations required for a split to occur.
+    :param minleaf: an integer that indicates the minimum number of observations required for a tree leaf.
+    :param nfeat: an integer indicating the number of features that can be used to find a split.
+    :return: the root of a Tree
+    """
+    root = TreeNode(x,y,None)
+    nodelist = [root]
+    while(nodelist):
+        current_node = nodelist.pop(0)
+        if current_node.impurity > 0:
+            if nmin <= current_node.observations.shape[0]:
+                splits = produceSplits(current_node, minleaf, nfeat)
+                best_split = selectSplit(splits)
+                if best_split:
+                    if(limit == 0):
+                        break
+                    limit = limit - 1
+                    applySplit(current_node, best_split)
+                    nodelist.append(current_node.left)
+                    nodelist.append(current_node.right)
+
+    return root
+
 
 def tree_pred(x: np.array, tr: TreeNode) -> np.array:
     """
