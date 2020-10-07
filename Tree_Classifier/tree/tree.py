@@ -2,7 +2,7 @@ from __future__ import annotations
 import numpy as np
 from typing import List
 import random
-
+from collections import Counter
 
 
 #Authors : Roberto Navarro - 4826260, Maria Galanty - 8118875, Giacomo Fiorentini - 4861310.
@@ -132,7 +132,11 @@ def tree_grow_b(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: int, m
     """
     tree_list = []
     for i in range (m):
-        root = TreeNode(x,y,None)
+        idx = np.random.randint(len(x), size=x.shape[0])
+        samples =  x[idx, :]
+        sampleslabels =  y[idx]
+        
+        root = TreeNode(samples,sampleslabels,None)
         nodelist = [root]
         while(nodelist):
             current_node = nodelist.pop(0)

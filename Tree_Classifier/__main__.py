@@ -7,23 +7,24 @@ def main():
     obs, labels = load_eclipse_data()
     testobs, testlabels = load_eclipse_testdata()
     
-    #treeA = tree_grow(obs,labels, 15, 5, obs.shape[1])
+    #treeA = tree_grow(obs,labels, 2, 1, obs.shape[1])
     #treeB = tree_grow_b(obs,labels, 15, 5, obs.shape[1], 100)
-    #treeC = tree_grow_b(obs,labels, 15, 5, 6, 100)
+    treeC = tree_grow_b(obs,labels, 15, 5, 6, 100)
     #treeD = tree_grow_limited(obs,labels, 15, 5, obs.shape[1], 2)
 
     #predicted_labels1 = tree_pred  (testobs,treeA)
     #predicted_labels2 = tree_pred_b(testobs,treeB)
-    #predicted_labels3 = tree_pred_b(testobs,treeC)
+    predicted_labels3 = tree_pred_b(testobs,treeC)
     #predicted_labels4 = tree_pred  (testobs,treeD)
         
     #To look into the splits
     #values, counts = np.unique(testlabels, return_counts=True)
     #print(values, counts)
 
+    #Check the matrixes for tree ABCD 
     #print(createMatrix(predicted_labels1,testlabels))
-    #print(createMatrix(predicted_labels2,testlabels))
-    #print(createMatrix(predicted_labels3,testlabels))
+    #print(createMatrix(predicted_labels2, testlabels))
+    print(createMatrix(predicted_labels3,testlabels))
     #print(createMatrix(predicted_labels4,testlabels))
 
     #obs, labels = load_credit_data()
