@@ -43,6 +43,12 @@ def load_eclipse_testdata():
     data.drop(data.columns[1], axis=1, inplace= True)
     data = data.to_numpy()
     return data, class_label
+
+def acc_prec_rec(matrix):
+    accuracy = round((matrix[0][0]+matrix[1][1])/(matrix[0][0]+matrix[0][1]+matrix[1][0]+matrix[1][1]), 2)
+    precision = round((matrix[0][0])/(matrix[0][0]+matrix[0][1]), 2)
+    recall = round((matrix[0][0])/(matrix[0][0]+matrix[1][0]), 2)
+    return accuracy, precision, recall
     
 if __name__ == "__main__":
     obs_test, label_test = load_credit_data()
