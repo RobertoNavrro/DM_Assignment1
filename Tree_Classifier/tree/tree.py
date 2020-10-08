@@ -85,12 +85,13 @@ def tree_grow_limited(x: np.array, y: np.array, nmin: int, minleaf: int, nfeat: 
                 splits = produceSplits(current_node, minleaf, nfeat)
                 best_split = selectSplit(splits)
                 if best_split:
-                    if(limit == 0):
-                        break
+
                     limit = limit - 1
                     applySplit(current_node, best_split)
                     nodelist.append(current_node.left)
                     nodelist.append(current_node.right)
+                    if(limit == 0):
+                        break
 
     return root
 

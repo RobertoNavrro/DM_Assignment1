@@ -32,7 +32,7 @@ def load_eclipse_data():
     class_label = data.iloc[:,1].copy().to_numpy()
     data.drop(data.columns[1], axis=1, inplace= True)
     data = data.to_numpy()
-    return data, class_label
+    return data, np.clip(class_label, 0, 1)
 
 def load_eclipse_testdata():
     path = str(Path(__file__).parent.parent.parent.joinpath('Tree_Classifier\data', 'eclipse-metrics-packages-3.0.csv'))
@@ -42,9 +42,9 @@ def load_eclipse_testdata():
     class_label = data.iloc[:,1].copy().to_numpy()
     data.drop(data.columns[1], axis=1, inplace= True)
     data = data.to_numpy()
-    return data, class_label
+    return data, np.clip(class_label, 0, 1)
 
-def acc_prec_rec(matrix):
+def acc_pred_rec(matrix):
     accuracy = round((matrix[0][0]+matrix[1][1])/(matrix[0][0]+matrix[0][1]+matrix[1][0]+matrix[1][1]), 2)
     precision = round((matrix[0][0])/(matrix[0][0]+matrix[0][1]), 2)
     recall = round((matrix[0][0])/(matrix[0][0]+matrix[1][0]), 2)
